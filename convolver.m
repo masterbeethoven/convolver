@@ -1,7 +1,9 @@
 %seori sachs
-%4.17.14
+%4.20.14
+%resubmit
 
-function outputSignal = convolver(irFilename, signalFilename, convType)
+%all these must be strings and they must have .wav at the end!
+function outputSignal = convolver(irFilename, signalFilename, outFile, convType)
 
 
 % setting variables 
@@ -12,6 +14,8 @@ ImpulseResponse = audioread(irFilename);
 signal = audioread(signalFilename);
 %to make it mono
 ImpulseResponse = sum(ImpulseResponse,2)/2;
+signal = sum(signal,2)/2;
+
 
 %ERROR CHECKING
 
@@ -22,6 +26,7 @@ end
 
 if ~ischar(signalFilename)
     error('"signalFilename" must be a string!')
+    
 end
 
 %fast conv
@@ -50,6 +55,7 @@ switch convType
     OUTPUT = SIGNAL .* IMPULSERESPONSE;
     %ifft
     outputSignal = ifft(OUTPUT);
+    soundsc(outputSignal, 44100);
 
     case 'direct'
         irLen = length(ImpulseResponse);
@@ -79,9 +85,10 @@ switch convType
         outputSignal = sum(convMatrix);
 end
 %sound
-soundsc(outputSignal, 44100)
+soundsc(outputSignal, 44100);
 
-
+%user inputted audiowrite. must have .wav at the end of it
+audiowrite(outFile,outputSignal,44100);
 
 end
 
